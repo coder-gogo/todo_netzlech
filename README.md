@@ -4,6 +4,7 @@
 Editor -> Code style -> Dart set line length to 200
 
 flutterfire configure --project=to-do-c2de6
+
 --------------------------------------------------------
 # Features
 
@@ -265,3 +266,11 @@ class _PaginationExampleState extends State<PaginationExample> {
   You can find it here (.github/workflows/flutter_build.yml)
 
 --------------------------------------------------------
+          IconButton(
+            onPressed: () => GoRouter.of(context).push('/setting'),
+            icon: const Icon(Icons.settings),
+          ),
+          IconButton(
+            onPressed: () => GoRouter.of(context).push('/pagination'),
+            icon: const Icon(Icons.pages_sharp),
+          ),

@@ -1,8 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:starter_template/main.dart';
-import 'package:starter_template/screen/pagination/pagination_bloc.dart';
-import 'package:starter_template/screen/pagination/pagination_screen.dart';
+import 'package:todo_netzlech/main.dart';
+import 'package:todo_netzlech/screen/pagination/pagination_bloc.dart';
+import 'package:todo_netzlech/screen/pagination/pagination_screen.dart';
+import 'package:todo_netzlech/screen/todo/screen/create_todo.dart';
+import 'package:todo_netzlech/screen/todo/screen/pending_task_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -10,7 +12,7 @@ final router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const MyHomePage(),
+      builder: (context, state) => const HomePage(),
       routes: [
         GoRoute(
           path: 'setting',
@@ -27,7 +29,26 @@ final router = GoRouter(
             );
           },
         ),
+        GoRoute(
+          path: TodoRoute.pendingTask,
+          builder: (context, state) {
+            const screen = PendingTaskScreen();
+            return screen;
+          },
+        ),
+        GoRoute(
+          path: TodoRoute.createTodo,
+          builder: (context, state) {
+            const screen = CreateTodo();
+            return screen;
+          },
+        ),
       ],
     ),
   ],
 );
+
+class TodoRoute {
+  static const String createTodo = '/create_todo';
+  static const String pendingTask = '/pending_task';
+}

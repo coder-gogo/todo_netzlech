@@ -1,7 +1,7 @@
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
-import 'package:starter_template/injectable/injectable.dart';
-import 'package:starter_template/utils/app_directory/app_directory.dart';
+import 'package:todo_netzlech/injectable/injectable.dart';
+import 'package:todo_netzlech/utils/app_directory/app_directory.dart';
 
 // Global options
 final cacheOption = CacheOptions(

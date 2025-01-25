@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:starter_template/utils/data_base/app_database/database_naming/database_naming.dart';
+import 'package:todo_netzlech/utils/data_base/app_database/database_naming/database_naming.dart';
 
 class DataBaseHelper {
   DataBaseHelper._();

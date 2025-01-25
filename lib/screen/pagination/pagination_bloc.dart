@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:starter_template/injectable/injectable.dart';
-import 'package:starter_template/model/people_model/people.dart';
-import 'package:starter_template/screen/pagination/pagination_state.dart';
-import 'package:starter_template/services/web_service/api_service.dart';
+import 'package:todo_netzlech/injectable/injectable.dart';
+import 'package:todo_netzlech/model/people_model/people.dart';
+import 'package:todo_netzlech/screen/pagination/pagination_state.dart';
+import 'package:todo_netzlech/services/web_service/api_service.dart';
 
 class PaginationBloc extends Cubit<PaginationBlocState> {
   late final PagingController<int, PeopleModel> _pagingController;

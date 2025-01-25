@@ -1,24 +1,37 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:go_router/go_router.dart';
-import 'package:starter_template/injectable/injectable.dart';
-import 'package:starter_template/model/people_model/people.dart';
-import 'package:starter_template/route_config/route_config.dart';
-import 'package:starter_template/services/firebase/firebase_push_helper.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_netzlech/gen/assets.gen.dart';
+import 'package:todo_netzlech/gen/fonts.gen.dart';
+import 'package:todo_netzlech/injectable/injectable.dart';
+import 'package:todo_netzlech/model/people_model/people.dart';
+import 'package:todo_netzlech/route_config/route_config.dart';
+import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
+import 'package:todo_netzlech/services/firebase/firebase_push_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:starter_template/services/web_service/api_service.dart';
-import 'package:starter_template/utils/custom_theme_color/custom_theme_color.dart';
-import 'package:starter_template/utils/extension.dart';
-import 'package:starter_template/utils/localization_manager/localization_manager.dart';
-import 'package:starter_template/utils/shimmer/shimmer.dart';
-import 'package:starter_template/widget/api_builder_widget.dart';
-import 'package:starter_template/widget/theme_selection_widget.dart';
+import 'package:todo_netzlech/services/web_service/api_service.dart';
+import 'package:todo_netzlech/utils/calender/horizontal_calender.dart';
+import 'package:todo_netzlech/utils/custom_theme_color/custom_theme_color.dart';
+import 'package:todo_netzlech/utils/extension.dart';
+import 'package:todo_netzlech/utils/localization_manager/localization_manager.dart';
+import 'package:todo_netzlech/widget/api_builder_widget.dart';
+import 'package:todo_netzlech/widget/theme_selection_widget.dart';
+import 'package:todo_netzlech/widget/todo_widget/home_title_bar.dart';
+
+import 'widget/todo_widget/shimmer_task_card.dart';
+import 'widget/todo_widget/task_card.dart';
 
 Future<void> main() async {
   await configuration(runApp: () async {
-    final themeMode = await AdaptiveTheme.getThemeMode();
-    runApp(Application(mode: themeMode));
+    ///final themeMode = await AdaptiveTheme.getThemeMode();
+    getIt.registerSingleton(TodoBloc(), dispose: (param) => param.close());
+    runApp(
+      BlocProvider(
+        create: (context) => getIt<TodoBloc>(),
+        child: const Application(mode: AdaptiveThemeMode.light),
+      ),
+    );
   });
 }
 
@@ -34,23 +47,54 @@ class Application extends StatelessWidget {
       builder: (locale) => AdaptiveTheme(
         light: ThemeData(
           useMaterial3: true,
+          datePickerTheme: DatePickerThemeData(
+            headerBackgroundColor: Colors.white,
+            headerForegroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            elevation: 6,
+            backgroundColor: Colors.white,
+            yearStyle: const TextStyle(color: Colors.black),
+            dayStyle: const TextStyle(color: Colors.black),
+            rangePickerElevation: 12,
+          ),
+          fontFamily: FontFamily.rubik,
           brightness: Brightness.light,
-          colorSchemeSeed: Colors.blue,
+          scaffoldBackgroundColor: const Color(0XFFFFFFFF),
+          primaryColor: const Color(0xFF0560FA),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0560FA),
+            primary: const Color(0xFF0560FA),
+          ),
+          buttonTheme: ButtonThemeData(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22), // Rounded corners
+            ),
+          ),
+          appBarTheme: const AppBarTheme(
+            surfaceTintColor: Color(0xFFF8FBFF),
+            backgroundColor: Color(0xFFF8FBFF),
+            foregroundColor: Color(0xFFF8FBFF),
+            iconTheme: IconThemeData(
+              color: Color(0XFF0560FA),
+            ),
+            titleTextStyle: TextStyle(
+              color: Color(0XFF0560FA),
+              fontWeight: FontWeight.w500,
+              fontSize: 20.0,
+            ),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: const Color(0XFF0560FA), // Background color
+          ),
           extensions: <ThemeExtension<dynamic>>[
             CustomThemeColor(
               shimmerBaseColor: Colors.grey.shade300,
               shimmerHighlightColor: Colors.grey.shade100,
-            ),
-          ],
-        ),
-        dark: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorSchemeSeed: Colors.blue,
-          extensions: <ThemeExtension<dynamic>>[
-            CustomThemeColor(
-              shimmerBaseColor: Colors.grey.shade800,
-              shimmerHighlightColor: Colors.grey.shade600,
             ),
           ],
         ),
@@ -70,14 +114,14 @@ class Application extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
@@ -95,89 +139,64 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Retrofit"),
-        actions: [
-          IconButton(
-            onPressed: () => GoRouter.of(context).push('/setting'),
-            icon: const Icon(Icons.settings),
-          ),
-          IconButton(
-            onPressed: () => GoRouter.of(context).push('/pagination'),
-            icon: const Icon(Icons.pages_sharp),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => router.push(TodoRoute.createTodo),
+        child: Assets.svg.add.svg(),
       ),
-      body: ApiBuilderWidget<List<PeopleModel>>(
-        key: peopleKey,
-        future: getIt<RestClient>().getPeoples(),
-        loadingWidget: ListView(
-            children: List.generate(20, (index) => index)
-                .map<Widget>((e) => shimmerTileWidget(context))
-                .toList()),
-        onConnectionRestored: () =>
-            peopleKey.refresh(getIt<RestClient>().getPeoples()),
-        onCompleted: (snapshot) {
-          return RefreshIndicator(
-            onRefresh: () async =>
-                peopleKey.refresh(getIt<RestClient>().getPeoples()),
-            child: ListView(
-                children: (snapshot as List<PeopleModel>)
-                    .map<Widget>(peopleWidget)
-                    .toList()),
-          );
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              floating: true,
+              snap: true,
+              pinned: true,
+              actions: [
+                IconButton(
+                  onPressed: () => router.push(TodoRoute.pendingTask),
+                  icon: Assets.svg.task.svg(),
+                ),
+              ],
+              forceElevated: innerBoxIsScrolled,
+              title: const HomeTitleBar(),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(90),
+                child: HorizontalWeekCalendar(
+                  inactiveBackgroundColor: const Color(0XFFEEF5FF),
+                  inactiveTextColor: const Color(0XFF76B5FF),
+                  weekStartFrom: WeekStartFrom.sunday,
+                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  minDate: DateTime(1970),
+                  maxDate: DateTime(2050),
+                  initialDate: DateTime.now(),
+                ),
+              ),
+            ),
+          ];
         },
+        body: ApiBuilderWidget<List<PeopleModel>>(
+          key: peopleKey,
+          future: getIt<RestClient>().getPeoples(),
+          loadingWidget: ListView(
+            padding: EdgeInsets.zero,
+            children: List.generate(20, (index) => index).map<Widget>((e) => const ShimmerTaskCard()).toList(),
+          ),
+          onConnectionRestored: () => peopleKey.refresh(getIt<RestClient>().getPeoples()),
+          onCompleted: (snapshot) {
+            return ListView(
+              padding: EdgeInsets.zero,
+              children: (snapshot as List<PeopleModel>).map<Widget>(peopleWidget).toList(),
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget peopleWidget(PeopleModel model) {
-    return ListTile(
-      leading: ClipRRect(
-        borderRadius: BorderRadius.circular(100.0),
-        child: Image.network(
-          model.avatar.toString(),
-          errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
-          height: 50,
-        ),
-      ),
-      title: Text(model.name.toString()),
-      subtitle: Text(model.createdAt.toString()),
-    );
-  }
-
-  Widget shimmerTileWidget(BuildContext context) {
-    final myColors = Theme.of(context).extension<CustomThemeColor>()!;
-    return Shimmer.fromColors(
-      baseColor: myColors.shimmerBaseColor,
-      highlightColor: myColors.shimmerHighlightColor,
-      enabled: true,
-      child: ListTile(
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(100.0),
-          child: Container(
-            width: 50,
-            height: 50,
-            color: Colors.white,
-          ),
-        ),
-        title: Container(
-          height: 12.0,
-          margin: EdgeInsets.only(right: context.width / 2),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-        ),
-        subtitle: Container(
-          margin: EdgeInsets.only(right: context.width / 3),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,
-          ),
-          height: 12.0,
-        ),
-      ),
+    return TaskCard(
+      title: 'Workout',
+      isCompleted: true,
+      completedAt: DateTime.now(),
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:starter_template/model/beer_model/beer.dart';
-import 'package:starter_template/model/people_model/people.dart';
+import 'package:todo_netzlech/model/beer_model/beer.dart';
+import 'package:todo_netzlech/model/people_model/people.dart';
 import 'package:injectable/injectable.dart' as i;
 
 part 'api_service.g.dart';

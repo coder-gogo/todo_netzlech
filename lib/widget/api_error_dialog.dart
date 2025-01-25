@@ -1,6 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:starter_template/services/exception/exception.dart';
+import 'package:todo_netzlech/services/exception/exception.dart';
 
 class ErrorDialog extends StatefulWidget {
   const ErrorDialog({

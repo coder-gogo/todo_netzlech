@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:starter_template/services/exception/exception.dart';
-import 'package:starter_template/widget/api_error_dialog.dart';
-import 'package:starter_template/widget/generic_builder.dart';
+import 'package:todo_netzlech/services/exception/exception.dart';
+import 'package:todo_netzlech/widget/api_error_dialog.dart';
+import 'package:todo_netzlech/widget/generic_builder.dart';
 
 class ApiBuilderWidget<T> extends StatefulWidget {
   const ApiBuilderWidget({

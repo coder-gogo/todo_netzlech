@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:starter_template/model/people_model/people.dart';
-import 'package:starter_template/screen/pagination/pagination_bloc.dart';
-import 'package:starter_template/utils/custom_theme_color/custom_theme_color.dart';
-import 'package:starter_template/utils/extension.dart';
-import 'package:starter_template/utils/shimmer/shimmer.dart';
+import 'package:todo_netzlech/model/people_model/people.dart';
+import 'package:todo_netzlech/screen/pagination/pagination_bloc.dart';
+import 'package:todo_netzlech/utils/custom_theme_color/custom_theme_color.dart';
+import 'package:todo_netzlech/utils/extension.dart';
+import 'package:todo_netzlech/utils/shimmer/shimmer.dart';
 
 class PaginationExample extends StatelessWidget {
   const PaginationExample({super.key});

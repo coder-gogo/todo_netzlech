@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:starter_template/utils/extension.dart';
+import 'package:todo_netzlech/utils/extension.dart';
 
 class UserFriendlyError {
   final String title;

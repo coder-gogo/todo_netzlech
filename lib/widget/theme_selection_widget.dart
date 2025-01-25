@@ -1,6 +1,6 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:starter_template/utils/extension.dart';
+import 'package:todo_netzlech/utils/extension.dart';
 
 class ThemeSelectionWidget extends StatelessWidget {
   const ThemeSelectionWidget({super.key});

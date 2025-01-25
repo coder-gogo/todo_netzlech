@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:starter_template/injectable/injectable.dart';
+import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:starter_template/utils/shared_pref/shared_pref.dart';
+import 'package:todo_netzlech/utils/shared_pref/shared_pref.dart';
 
 /// Builder function to build localized widgets
 typedef LocalizationBuilder = Widget Function(Locale locale);

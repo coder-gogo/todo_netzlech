@@ -3,8 +3,8 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:starter_template/utils/data_base/app_database/database_naming/database_naming.dart';
-import 'package:starter_template/utils/data_base/model/user_information.dart';
+import 'package:todo_netzlech/utils/data_base/app_database/database_naming/database_naming.dart';
+import 'package:todo_netzlech/utils/data_base/model/user_information.dart';
 
 import 'database_helper/database_helper.dart';
 import 'helper/database_method_helper.dart';

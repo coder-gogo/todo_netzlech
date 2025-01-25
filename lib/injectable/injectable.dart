@@ -12,9 +12,9 @@ import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:starter_template/firebase_options.dart';
-import 'package:starter_template/injectable/injectable.config.dart';
-import 'package:starter_template/services/web_service/cache_interceptor/cache_interceptor.dart';
+import 'package:todo_netzlech/firebase_options.dart';
+import 'package:todo_netzlech/injectable/injectable.config.dart';
+import 'package:todo_netzlech/services/web_service/cache_interceptor/cache_interceptor.dart';
 
 final getIt = GetIt.instance;
 
