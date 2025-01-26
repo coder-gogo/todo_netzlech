@@ -1,8 +1,13 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart' as i;
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast_io.dart';
+import 'dart:io';
+import 'package:collection/collection.dart';
+import 'package:todo_netzlech/model/task_model/task_model.dart';
+import 'package:todo_netzlech/utils/extension.dart';
 
 class DatabaseService {
   Database? _database;
@@ -34,101 +39,103 @@ class TodoHelper {
 
   final _store = StoreRef<String, List>.main();
 
-  // Insert or Update Data
-  Future<void> insertSession(
-    String date,
-    Map<String, dynamic> sessionData,
-  ) async {
-    // Fetch existing data for the date
+  // Insert or Update TaskModel
+  Future<void> insertTask(TaskModel task) async {
+    final date = task.createdAt.toFormattedString();
     final existingData = await _store.record(date).get(db);
-
-    // If data doesn't exist for the date, create new entry
     if (existingData == null) {
-      await _store.record(date).put(db, [sessionData]);
+      await _store.record(date).put(db, [task.toMap()]);
     } else {
-      // If data exists, update the list with the new session
       List existing = List.from(existingData);
-      existing.add(sessionData);
+      existing.add(task.toMap());
       await _store.record(date).put(db, existing);
     }
   }
 
-  // Fetch Sessions for a Date
-  Future<List> fetchSessions(String date) async {
+// Add this function outside your class
+  List<TaskModel> _parseTaskData(dynamic data) {
+    if (data == null) return [];
+    return List<TaskModel>.from(data.map((task) => TaskModel.fromMap(task)));
+  }
+
+// Fetch Tasks for a Specific Date with multi-threading
+  Future<List<TaskModel>> fetchTasks(DateTime val) async {
+    final date = val.toFormattedString();
     final data = await _store.record(date).get(db);
-    return data ?? [];
+    // Use the compute function to parse data in a separate thread
+    final tasks = await compute(_parseTaskData, data);
+    return tasks;
   }
 
-  // Update Sessions for a Date
-  Future<void> updateSessions(String date, List value) async {
-    await _store.record(date).update(db, value);
+  // Update a Specific TaskModel for a Specific Date
+  Future<void> updateTask(String date, int index, TaskModel updatedTask) async {
+    final existingData = await _store.record(date).get(db);
+    if (existingData != null && existingData.length > index) {
+      List existing = List.from(existingData);
+      existing[index] = updatedTask.toMap();
+      await _store.record(date).put(db, existing);
+    }
   }
 
-  // Fetch All Sessions
-  Future<Map<String, List<Map<String, dynamic>>>> fetchAllSessions() async {
-    final allData = await _store.find(db);
-    return {for (var record in allData) record.key: (record.value).cast<Map<String, dynamic>>()};
-  }
-
-  // Fetch All Sessions
-  Future<MapEntry<String, List<Map<String, dynamic>>>?> fetchTodaySession() async {
-    final today = DateTime.now();
-    final date = '${today.day}/${today.month}/${today.year}'; // e.g., "7/1/2025"
-
-    // Fetch the record with the key equal to the date
-    final record = await _store.record(date).get(db);
-
-    // If no record exists for the date, return an empty map
-    if (record == null || record.isEmpty) return null;
-
-    // Cast the record value to the required type and return it
-    return MapEntry(date, List<Map<String, dynamic>>.from(record));
-  }
-
-  Future<List<MapEntry<String, List<Map<String, dynamic>>>>> fetchDateWiseSession(DateTime start, DateTime end) async {
+  // Fetch All Pending Tasks
+  Future<Map<DateTime, List<TaskModel>>> fetchAllPendingTasks() async {
     final finder = Finder(
       filter: Filter.custom((record) {
         try {
-          if (record.key == null || record.key.toString().isEmpty) return false;
-          final recordDate = parseDate(record.key.toString());
-          if (recordDate == null) return false;
-          return recordDate.isAfter(start.subtract(const Duration(days: 1))) && recordDate.isBefore(end.add(const Duration(days: 1)));
+          final recordValue = record.value as List;
+          return recordValue.any((task) => task['status'] == 'pending');
         } catch (e) {
           return false;
         }
       }),
     );
 
-    // Find records matching the date range
     final records = await _store.find(db, finder: finder);
+    if (records.isEmpty) return {};
 
-    if (records.isEmpty) return [];
+    // Serialize records to pass to the isolate
+    final serializedRecords = records
+        .map((record) => {
+              'key': record.key,
+              'value': List<Map<String, dynamic>>.from(record.value),
+            })
+        .toList();
 
-    // Convert records to a serializable format
-    final serializableRecords = records.map((record) {
-      return {
-        'key': record.key,
-        'value': record.value,
-      };
-    }).toList();
+    // Use compute to handle grouping in an isolate
+    final groupedTasks = await compute(_groupPendingTasks, serializedRecords);
 
-    // Process records using compute for multithreading
-    final processedRecords = await compute(_processRecords, serializableRecords);
-
-    return processedRecords;
+    return groupedTasks;
   }
 
-  List<MapEntry<String, List<Map<String, dynamic>>>> _processRecords(List<Map<String, dynamic>> records) {
-    return records.map((record) {
-      return MapEntry(
-        record['key'].toString(),
-        List<Map<String, dynamic>>.from(record['value']),
-      );
-    }).toList();
+  // Isolate Function: Group and filter tasks
+  Map<DateTime, List<TaskModel>> _groupPendingTasks(List<Map<String, dynamic>> records) {
+    final pendingTasks = <MapEntry<DateTime, TaskModel>>[];
+
+    for (Map<String, dynamic> record in records) {
+      final key = record['key'] as String;
+      final tasks = List<Map<String, dynamic>>.from(record['value']);
+      for (Map<String, dynamic> taskMap in tasks) {
+        if (taskMap['status'] == 'pending') {
+          pendingTasks.add(MapEntry(DateFormat('dd/MM/yyyy').parse(key), TaskModel.fromMap(taskMap)));
+        }
+      }
+    }
+
+    // Group tasks by their keys
+    final grouped = groupBy(pendingTasks, (entry) => entry.key).map<DateTime, List<TaskModel>>((key, value) {
+      return MapEntry(key, value.map((entry) => entry.value).toList());
+    });
+    return grouped;
   }
 
-  // Delete Sessions for a Date
-  Future<void> deleteSessions(String date) async {
+  // Fetch All Tasks
+  Future<Map<String, List<TaskModel>>> fetchAllTasks() async {
+    final allData = await _store.find(db);
+    return {for (var record in allData) record.key: List<TaskModel>.from(record.value.map((task) => TaskModel.fromMap(task)))};
+  }
+
+  // Delete Tasks for a Date
+  Future<void> deleteTasks(String date) async {
     await _store.record(date).delete(db);
   }
 }

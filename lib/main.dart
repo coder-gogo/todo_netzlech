@@ -1,30 +1,31 @@
 import 'dart:async';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sembast/sembast.dart';
 import 'package:todo_netzlech/gen/assets.gen.dart';
 import 'package:todo_netzlech/gen/fonts.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
-import 'package:todo_netzlech/model/people_model/people.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
 import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
+import 'package:todo_netzlech/screen/todo/bloc/pagination_state.dart';
 import 'package:todo_netzlech/services/firebase/firebase_push_helper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_netzlech/services/web_service/api_service.dart';
 import 'package:todo_netzlech/utils/calender/horizontal_calender.dart';
 import 'package:todo_netzlech/utils/custom_theme_color/custom_theme_color.dart';
 import 'package:todo_netzlech/utils/extension.dart';
 import 'package:todo_netzlech/utils/localization_manager/localization_manager.dart';
+import 'package:todo_netzlech/utils/todo_db/todo_db.dart';
 import 'package:todo_netzlech/widget/api_builder_widget.dart';
 import 'package:todo_netzlech/widget/theme_selection_widget.dart';
 import 'package:todo_netzlech/widget/todo_widget/home_title_bar.dart';
-import 'widget/todo_widget/shimmer_task_card.dart';
 import 'widget/todo_widget/task_card.dart';
 
 Future<void> main() async {
   await configuration(runApp: () async {
     ///final themeMode = await AdaptiveTheme.getThemeMode();
-    getIt.registerSingleton(TodoBloc(), dispose: (param) => param.close());
+    final todoHelper = TodoHelper(getIt<Database>());
+    getIt.registerSingleton(TodoBloc(service: todoHelper), dispose: (param) => param.close());
     runApp(
       BlocProvider(
         create: (context) => getIt<TodoBloc>(),
@@ -140,6 +141,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () => router.push(TodoRoute.createTodo),
+        //onPressed: () => getIt<TodoBloc>().insert(),
         child: Assets.svg.add.svg(),
       ),
       body: NestedScrollView(
@@ -160,6 +162,7 @@ class _HomePageState extends State<HomePage> {
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(90),
                 child: HorizontalWeekCalendar(
+                  onDateChange: (date) => getIt<TodoBloc>().queryForDate(date),
                   inactiveBackgroundColor: const Color(0XFFEEF5FF),
                   inactiveTextColor: const Color(0XFF76B5FF),
                   weekStartFrom: WeekStartFrom.sunday,
@@ -172,30 +175,22 @@ class _HomePageState extends State<HomePage> {
             ),
           ];
         },
-        body: ApiBuilderWidget<List<PeopleModel>>(
-          key: peopleKey,
-          future: getIt<RestClient>().getPeoples(),
-          loadingWidget: ListView(
-            padding: EdgeInsets.zero,
-            children: List.generate(20, (index) => index).map<Widget>((e) => const ShimmerTaskCard()).toList(),
-          ),
-          onConnectionRestored: () => peopleKey.refresh(getIt<RestClient>().getPeoples()),
-          onCompleted: (snapshot) {
-            return ListView(
-              padding: EdgeInsets.zero,
-              children: (snapshot as List<PeopleModel>).map<Widget>(peopleWidget).toList(),
-            );
+        body: BlocConsumer<TodoBloc, TodoBlocState>(
+          bloc: getIt<TodoBloc>()..fetchTask(),
+          buildWhen: (previous, current) => current.task != previous.task,
+          builder: (context, state) {
+            return state.task.isEmpty
+                ? Center(
+                    child: Assets.svg.noTask.svg(),
+                  )
+                : ListView(
+                    padding: EdgeInsets.zero,
+                    children: state.task.map<Widget>((e) => TaskCard(model: e)).toList(),
+                  );
           },
+          listener: (context, state) {},
         ),
       ),
-    );
-  }
-
-  Widget peopleWidget(PeopleModel model) {
-    return TaskCard(
-      title: 'Workout',
-      isCompleted: true,
-      completedAt: DateTime.now(),
     );
   }
 }

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:todo_netzlech/model/task_model/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  final String title;
-  final bool isCompleted;
-  final DateTime? completedAt;
+  final TaskModel model;
 
   const TaskCard({
     super.key,
-    required this.title,
-    required this.isCompleted,
-    this.completedAt,
+    required this.model,
   });
 
   @override
@@ -26,13 +23,13 @@ class TaskCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: isCompleted ? Colors.blue[100] : Colors.blue[50],
+              color: model.isDone() ? Colors.blue[100] : Colors.blue[50],
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              isCompleted ? Icons.check : Icons.square_outlined,
-              color: isCompleted ? Colors.blue : Colors.black,
+              model.isDone() ? Icons.check : Icons.square_outlined,
+              color: model.isDone() ? Colors.blue : Colors.black,
             ),
           ),
           const SizedBox(width: 16),
@@ -41,17 +38,17 @@ class TaskCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  model.title,
                   style: TextStyle(
-                    color: isCompleted ? Colors.blue[100] : Colors.black,
+                    color: model.isDone() ? Colors.blue[100] : Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                    decoration: model.isDone() ? TextDecoration.lineThrough : null,
                   ),
                 ),
-                if (isCompleted && completedAt != null)
+                if (model.isDone() && model.getUpdateDescription() != null)
                   Text(
-                    "Completed at ${completedAt.toString().split('.')[0]}",
+                    model.getUpdateDescription().toString(),
                     style: TextStyle(
                       color: Colors.blue[100],
                       fontSize: 12,
