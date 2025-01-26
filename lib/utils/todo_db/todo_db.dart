@@ -55,7 +55,7 @@ class TodoHelper {
 // Add this function outside your class
   List<TaskModel> _parseTaskData(dynamic data) {
     if (data == null) return [];
-    return List<TaskModel>.from(data.map((task) => TaskModel.fromMap(task)));
+    return List<TaskModel>.from(data.map((task) => TaskModel.fromMap(task))).where((element) => !element.isDeleted).toList();
   }
 
 // Fetch Tasks for a Specific Date with multi-threading
@@ -97,7 +97,9 @@ class TodoHelper {
       filter: Filter.custom((record) {
         try {
           final recordValue = record.value as List;
-          return recordValue.any((task) => task['status'] == 'pending');
+          return recordValue.any(
+            (task) => task['status'] == 'pending' && task['is_deleted'] == false,
+          );
         } catch (e) {
           return false;
         }
