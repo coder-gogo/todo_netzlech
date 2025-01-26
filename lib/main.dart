@@ -18,7 +18,6 @@ import 'package:todo_netzlech/utils/localization_manager/localization_manager.da
 import 'package:todo_netzlech/widget/api_builder_widget.dart';
 import 'package:todo_netzlech/widget/theme_selection_widget.dart';
 import 'package:todo_netzlech/widget/todo_widget/home_title_bar.dart';
-
 import 'widget/todo_widget/shimmer_task_card.dart';
 import 'widget/todo_widget/task_card.dart';
 

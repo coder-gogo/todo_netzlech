@@ -11,10 +11,12 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:sembast/src/api/v2/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_netzlech/firebase_options.dart';
 import 'package:todo_netzlech/injectable/injectable.config.dart';
 import 'package:todo_netzlech/services/web_service/cache_interceptor/cache_interceptor.dart';
+import 'package:todo_netzlech/utils/todo_db/todo_db.dart';
 
 final getIt = GetIt.instance;
 
@@ -53,6 +55,12 @@ abstract class RegisterModule {
 
   @preResolve
   Future<SharedPreferences> prefs() => SharedPreferences.getInstance();
+
+  @preResolve
+  Future<Database> initDb() {
+    final service = DatabaseService();
+    return service.database;
+  }
 
   @preResolve
   Future<Directory> temporaryDirectory() => getTemporaryDirectory();
