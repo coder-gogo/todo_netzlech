@@ -5,7 +5,6 @@ import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
 import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
 import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
-import 'package:todo_netzlech/services/firebase/firebase_push_helper.dart';
 import 'package:todo_netzlech/utils/calender/horizontal_calender.dart';
 import 'package:todo_netzlech/widget/api_builder_widget.dart';
 import 'package:todo_netzlech/widget/todo_widget/home_title_bar.dart';
@@ -19,12 +18,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-    final notification = FirebasePushHelper.instance;
-    notification.initPushConfiguration((value) {});
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final notification = FirebasePushHelper.instance;
+  //   notification.initPushConfiguration((value) {});
+  // }
 
   final peopleKey = GlobalKey<ApiBuilderWidgetState>();
 
