@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_netzlech/gen/assets.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:todo_netzlech/model/task_model/task_model.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
@@ -9,16 +10,24 @@ import 'package:todo_netzlech/widget/todo_widget/task_time_selection.dart';
 import 'package:todo_netzlech/widget/todo_widget/todo_field.dart';
 import 'package:todo_netzlech/widget/todo_widget/todo_material_button.dart';
 
-class CreateTodo extends StatefulWidget {
-  const CreateTodo({super.key});
+class EditTodo extends StatefulWidget {
+  const EditTodo({super.key});
 
   @override
-  State<CreateTodo> createState() => _CreateTodoState();
+  State<EditTodo> createState() => _EditTodoState();
 }
 
-class _CreateTodoState extends State<CreateTodo> {
+class _EditTodoState extends State<EditTodo> {
   final formKey = GlobalKey<FormState>();
-  TaskModel model = TaskModel(title: '');
+  late TaskModel model;
+  late TextEditingController controller;
+
+  @override
+  void initState() {
+    model = getIt<TodoBloc>().state.editTask;
+    controller = TextEditingController(text: model.title);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +36,15 @@ class _CreateTodoState extends State<CreateTodo> {
       resizeToAvoidBottomInset: true, // Prevent resizing
       appBar: AppBar(
         title: Text(
-          'New Task',
+          'Edit Task',
           style: theme.appBarTheme.titleTextStyle,
         ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Assets.svg.delete.svg(),
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -56,11 +71,11 @@ class _CreateTodoState extends State<CreateTodo> {
                     child: TodoMaterialButton(
                       onPressed: () {
                         if (formKey.currentState?.validate() ?? false) {
-                          getIt<TodoBloc>().insert();
+                          getIt<TodoBloc>().editTask();
                           router.pop();
                         }
                       },
-                      text: 'Save',
+                      text: 'Update',
                     ),
                   ),
                 ],
@@ -73,19 +88,21 @@ class _CreateTodoState extends State<CreateTodo> {
         key: formKey,
         child: Column(
           children: [
-            TodoField(onChange: (value) {
-              model = model.copyWith(title: value);
-              getIt<TodoBloc>().onChangeAddTask(model);
-            }),
+            TodoField(
+                controller: controller,
+                onChange: (value) {
+                  model = model.copyWith(title: value);
+                  getIt<TodoBloc>().onChangeEditTask(model);
+                }),
             const Divider(),
             BlocConsumer<TodoBloc, TodoBlocState>(
-              buildWhen: (previous, current) => previous.addTask != current.addTask,
+              buildWhen: (previous, current) => previous.editTask != current.editTask,
               builder: (context, state) {
                 return TaskTimeSelection(
-                  selectedDate: state.addTask.createdAt,
+                  selectedDate: state.editTask.createdAt,
                   onSelectDate: (DateTime date) {
                     model = model.copyWith(createdAt: date);
-                    getIt<TodoBloc>().onChangeAddTask(model);
+                    getIt<TodoBloc>().onChangeEditTask(model);
                   },
                 );
               },

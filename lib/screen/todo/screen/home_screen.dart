@@ -86,7 +86,10 @@ class _HomePageState extends State<HomePage> {
                               allowDivider: state.task.last.id != e.id,
                               model: e,
                               onChange: getIt<TodoBloc>().updateTaskStatus,
-                              onClick: () {},
+                              onClick: () {
+                                getIt<TodoBloc>().onChangeEditTask(e);
+                                router.push(TodoRoute.editTodo);
+                              },
                             ))
                         .toList(),
                   );

@@ -10,6 +10,7 @@ class TodoBloc extends Cubit<TodoBlocState> {
       : super(TodoBlocState.initial(
           date: DateTime.now(),
           model: TaskModel(title: ''),
+          editTask: TaskModel(title: ''),
         )) {
     fetchTask();
     fetchPendingTask();
@@ -52,10 +53,20 @@ class TodoBloc extends Cubit<TodoBlocState> {
     emit(state.copyWith(addTask: model));
   }
 
+  void onChangeEditTask(TaskModel model) {
+    emit(state.copyWith(editTask: model));
+  }
+
   void insert() async {
     await service.insertTask(state.addTask);
     emit(state.copyWith(addTask: TaskModel(title: '')));
     fetchTask();
+  }
+
+  void editTask() async {
+    await service.updateTask(state.editTask);
+    fetchTask();
+    fetchPendingTask();
   }
 
   @override

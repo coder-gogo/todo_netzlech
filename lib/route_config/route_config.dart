@@ -4,6 +4,7 @@ import 'package:todo_netzlech/main.dart';
 import 'package:todo_netzlech/screen/pagination/pagination_bloc.dart';
 import 'package:todo_netzlech/screen/pagination/pagination_screen.dart';
 import 'package:todo_netzlech/screen/todo/screen/create_todo.dart';
+import 'package:todo_netzlech/screen/todo/screen/edit_todo.dart';
 import 'package:todo_netzlech/screen/todo/screen/home_screen.dart';
 import 'package:todo_netzlech/screen/todo/screen/pending_task_screen.dart';
 
@@ -44,6 +45,13 @@ final router = GoRouter(
             return screen;
           },
         ),
+        GoRoute(
+          path: TodoRoute.editTodo,
+          builder: (context, state) {
+            const screen = EditTodo();
+            return screen;
+          },
+        ),
       ],
     ),
   ],
@@ -52,4 +60,5 @@ final router = GoRouter(
 class TodoRoute {
   static const String createTodo = '/create_todo';
   static const String pendingTask = '/pending_task';
+  static const String editTodo = '/edit_todo';
 }
