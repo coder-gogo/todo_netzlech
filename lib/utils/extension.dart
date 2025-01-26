@@ -39,11 +39,11 @@ extension DateFormatting on DateTime {
     }
   }
 
-  String toCompletedAtString() {
+  String toCompletedAtString(String value) {
     final dateFormatter = DateFormat('dd/MM/yyyy');
     final timeFormatter = DateFormat('hh:mm a');
     final formattedDate = dateFormatter.format(this);
     final formattedTime = timeFormatter.format(this);
-    return 'Completed at $formattedDate $formattedTime';
+    return '$value $formattedDate $formattedTime';
   }
 }

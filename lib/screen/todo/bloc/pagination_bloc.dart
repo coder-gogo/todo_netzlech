@@ -25,6 +25,23 @@ class TodoBloc extends Cubit<TodoBlocState> {
     emit(state.copyWith(task: fetch));
   }
 
+  void updateTaskStatus(bool value, TaskModel model) async {
+    TaskModel taskModel = model;
+    if (value) {
+      taskModel = taskModel.copyWith(
+        status: 'completed',
+        updatedAt: DateTime.now(),
+      );
+    } else {
+      taskModel = taskModel.copyWith(status: 'pending',
+        updatedAt: DateTime.now(),
+      );
+    }
+    await service.updateTask(taskModel);
+    fetchTask();
+    fetchPendingTask();
+  }
+
   void fetchPendingTask() async {
     final fetch = await service.fetchAllPendingTasks();
     emit(state.copyWith(pendingTask: fetch));

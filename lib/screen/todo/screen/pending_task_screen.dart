@@ -55,7 +55,13 @@ class PendingTaskScreen extends StatelessWidget {
                             ),
                             Column(
                               mainAxisSize: MainAxisSize.min,
-                              children: e.value.map<Widget>((e) => TaskCard(model: e)).toList(),
+                              children: e.value
+                                  .map<Widget>((e) => TaskCard(
+                                        model: e,
+                                        onClick: () {},
+                                        onChange: getIt<TodoBloc>().updateTaskStatus,
+                                      ))
+                                  .toList(),
                             )
                           ],
                         ),

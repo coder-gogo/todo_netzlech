@@ -67,13 +67,27 @@ class TodoHelper {
     return tasks;
   }
 
-  // Update a Specific TaskModel for a Specific Date
-  Future<void> updateTask(String date, int index, TaskModel updatedTask) async {
+  // Update a Specific TaskModel by ID for a Specific Date
+  Future<void> updateTask(TaskModel updatedTask) async {
+    final date = updatedTask.createdAt.toFormattedString();
     final existingData = await _store.record(date).get(db);
-    if (existingData != null && existingData.length > index) {
-      List existing = List.from(existingData);
-      existing[index] = updatedTask.toMap();
-      await _store.record(date).put(db, existing);
+
+    if (existingData != null) {
+      // Convert existing data to a List of Maps
+      List<Map<String, dynamic>> existing = List<Map<String, dynamic>>.from(existingData);
+
+      // Find the task by ID
+      final taskIndex = existing.indexWhere((task) => task['id'] == updatedTask.id);
+
+      if (taskIndex != -1) {
+        // Update the task at the found index
+        existing[taskIndex] = updatedTask.toMap();
+        await _store.record(date).put(db, existing);
+      } else {
+        throw Exception("Task with ID $updatedTask.id not found for the date $date");
+      }
+    } else {
+      throw Exception("No tasks found for the date $date");
     }
   }
 

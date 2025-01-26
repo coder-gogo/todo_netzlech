@@ -55,7 +55,9 @@ class TaskModel extends Equatable {
         status: status ?? this.status,
       );
 
-  String? getUpdateDescription() => updatedAt?.toCompletedAtString();
+  String? getUpdateDescription() => updatedAt?.toCompletedAtString('Completed at');
+
+  String getCreatedDescription() => createdAt.toCompletedAtString('Created at');
 
   bool isDone() => status == 'completed';
 
