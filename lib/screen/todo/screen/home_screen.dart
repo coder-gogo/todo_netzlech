@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () => router.push(TodoRoute.createTodo),
-        //onPressed: () => getIt<TodoBloc>().insert(),
         child: Assets.svg.add.svg(),
       ),
       body: NestedScrollView(

@@ -320,7 +320,7 @@ class _HorizontalWeekCalendarState extends State<HorizontalWeekCalendar> {
                                             ),
                                           ),
                                           Container(
-                                            height: 41,
+                                            height: 42,
                                             alignment: Alignment.center,
                                             width: double.infinity,
                                             decoration: BoxDecoration(
