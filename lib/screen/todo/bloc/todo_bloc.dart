@@ -69,6 +69,12 @@ class TodoBloc extends Cubit<TodoBlocState> {
     fetchPendingTask();
   }
 
+  void deleteTask() async {
+    await service.updateTask(state.editTask.copyWith(isDeleted: true));
+    fetchTask();
+    fetchPendingTask();
+  }
+
   @override
   Future<void> close() {
     // TODO: implement close

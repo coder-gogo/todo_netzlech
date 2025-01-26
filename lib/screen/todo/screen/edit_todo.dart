@@ -6,6 +6,7 @@ import 'package:todo_netzlech/model/task_model/task_model.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
 import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
 import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
+import 'package:todo_netzlech/widget/todo_widget/delete_dialog.dart';
 import 'package:todo_netzlech/widget/todo_widget/task_time_selection.dart';
 import 'package:todo_netzlech/widget/todo_widget/todo_field.dart';
 import 'package:todo_netzlech/widget/todo_widget/todo_material_button.dart';
@@ -41,7 +42,19 @@ class _EditTodoState extends State<EditTodo> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => DeleteTaskDialog(
+                  onDelete: () {
+                    router.pop();
+                    router.pop();
+                    getIt<TodoBloc>().deleteTask();
+                  },
+                  onCancel: () => router.pop(),
+                ),
+              );
+            },
             icon: Assets.svg.delete.svg(),
           ),
         ],

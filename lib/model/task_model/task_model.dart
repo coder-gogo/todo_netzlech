@@ -8,12 +8,14 @@ class TaskModel extends Equatable {
   final String status; // e.g., 'pending', 'completed'
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final bool isDeleted;
 
   TaskModel({
     required this.title,
     this.updatedAt,
     this.status = 'pending',
     DateTime? createdAt,
+    this.isDeleted = false,
     String? id,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -26,6 +28,7 @@ class TaskModel extends Equatable {
       'status': status,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'is_deleted': isDeleted,
     };
   }
 
@@ -36,6 +39,7 @@ class TaskModel extends Equatable {
       status: map['status'],
       createdAt: DateTime.parse(map['createdAt']),
       id: map['id'],
+      isDeleted: map['is_deleted'],
       updatedAt: map['updatedAt'] != null ? DateTime.parse(map['updatedAt']) : null,
     );
   }
@@ -46,6 +50,7 @@ class TaskModel extends Equatable {
     String? status, // e.g., 'pending', 'completed'
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isDeleted,
   }) =>
       TaskModel(
         title: title ?? this.title,
@@ -53,6 +58,7 @@ class TaskModel extends Equatable {
         id: id ?? this.id,
         createdAt: createdAt ?? this.createdAt,
         status: status ?? this.status,
+        isDeleted: isDeleted ?? this.isDeleted,
       );
 
   String? getUpdateDescription() => updatedAt?.toCompletedAtString('Completed at');
@@ -62,5 +68,5 @@ class TaskModel extends Equatable {
   bool isDone() => status == 'completed';
 
   @override
-  List<Object?> get props => [id, title, status, createdAt, updatedAt];
+  List<Object?> get props => [id, title, status, createdAt, updatedAt, isDeleted];
 }
