@@ -5,7 +5,7 @@ import 'package:sembast/sembast.dart';
 import 'package:todo_netzlech/gen/fonts.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_netzlech/utils/custom_theme_color/custom_theme_color.dart';
@@ -78,6 +78,10 @@ class Application extends StatelessWidget {
               fontSize: 20.0,
             ),
           ),
+          dividerTheme: const DividerThemeData(
+            color: Color(0XFFDDECFF),
+          ),
+          dividerColor: const Color(0XFFDDECFF),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),

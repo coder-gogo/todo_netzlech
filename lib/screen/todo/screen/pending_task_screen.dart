@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_netzlech/gen/assets.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_state.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
 import 'package:todo_netzlech/utils/extension.dart';
 import 'package:todo_netzlech/widget/todo_widget/task_card.dart';
 
@@ -56,8 +56,9 @@ class PendingTaskScreen extends StatelessWidget {
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: e.value
-                                  .map<Widget>((e) => TaskCard(
-                                        model: e,
+                                  .map<Widget>((element) => TaskCard(
+                                        allowDivider: e.value.last.id != element.id,
+                                        model: element,
                                         onClick: () {},
                                         onChange: getIt<TodoBloc>().updateTaskStatus,
                                       ))

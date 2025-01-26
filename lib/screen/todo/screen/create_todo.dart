@@ -4,8 +4,8 @@ import 'package:todo_netzlech/gen/assets.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:todo_netzlech/model/task_model/task_model.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_state.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
 import 'package:todo_netzlech/utils/extension.dart';
 import 'package:todo_netzlech/widget/todo_widget/todo_material_button.dart';
 

@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_netzlech/gen/assets.gen.dart';
 import 'package:todo_netzlech/injectable/injectable.dart';
 import 'package:todo_netzlech/route_config/route_config.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_bloc.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_state.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_bloc.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
 import 'package:todo_netzlech/services/firebase/firebase_push_helper.dart';
 import 'package:todo_netzlech/utils/calender/horizontal_calender.dart';
 import 'package:todo_netzlech/widget/api_builder_widget.dart';
@@ -84,6 +84,7 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.zero,
                     children: state.task
                         .map<Widget>((e) => TaskCard(
+                              allowDivider: state.task.last.id != e.id,
                               model: e,
                               onChange: getIt<TodoBloc>().updateTaskStatus,
                               onClick: () {},

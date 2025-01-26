@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_netzlech/model/task_model/task_model.dart';
-import 'package:todo_netzlech/screen/todo/bloc/pagination_state.dart';
+import 'package:todo_netzlech/screen/todo/bloc/todo_state.dart';
 import 'package:todo_netzlech/utils/todo_db/todo_db.dart';
 
 class TodoBloc extends Cubit<TodoBlocState> {
@@ -33,7 +33,8 @@ class TodoBloc extends Cubit<TodoBlocState> {
         updatedAt: DateTime.now(),
       );
     } else {
-      taskModel = taskModel.copyWith(status: 'pending',
+      taskModel = taskModel.copyWith(
+        status: 'pending',
         updatedAt: DateTime.now(),
       );
     }
@@ -53,21 +54,8 @@ class TodoBloc extends Cubit<TodoBlocState> {
 
   void insert() async {
     await service.insertTask(state.addTask);
+    emit(state.copyWith(addTask: TaskModel(title: '')));
     fetchTask();
-    // await service.insertTask(
-    //   TaskModel(
-    //     title: Faker().lorem.sentence(),
-    //     status: Random().nextInt(100) % 2 == 0 ? 'completed' : 'pending',
-    //     createdAt: DateTime(
-    //       Faker().randomGenerator.integer(12, min: 1),
-    //       Faker().randomGenerator.integer(24, min: 1),
-    //     ),
-    //     updatedAt: DateTime(
-    //       Faker().randomGenerator.integer(12, min: 1),
-    //       Faker().randomGenerator.integer(24, min: 1),
-    //     ),
-    //   ),
-    // );
   }
 
   @override
